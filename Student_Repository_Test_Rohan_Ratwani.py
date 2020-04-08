@@ -1,7 +1,7 @@
 from typing import Dict,List
 import unittest
 
-from HW09_Rohan_Ratwani import Repository
+from Student_Repository_Rohan_Ratwani import Repository
 
 class Test(unittest.TestCase):
     """Helps to test all the functions"""
