@@ -7,7 +7,7 @@ class Test(unittest.TestCase):
     """Helps to test all the functions"""
     def test_data_for_Student(self):
         """This function is used to test data_for_student function's output"""
-        self.stevens: Repository = Repository("R:\Stevens\Sem-2\SSW-810\HW_10_Rohan_Ratwani")
+        self.stevens: Repository = Repository("R:\Stevens\Sem-2\SSW-810\Student-Repository")
 
         calculated: List = [['10103', 'Baldwin, C', ['CS 501', 'SSW 564', 'SSW 567', 'SSW 687'], ['SSW 540', 'SSW 555'], [], 3.44],
                             ['10115', 'Wyatt, X', ['CS 545', 'SSW 564', 'SSW 567', 'SSW 687'], ['SSW 540', 'SSW 555'], [], 3.81],
@@ -35,12 +35,12 @@ class Test(unittest.TestCase):
         calculated2: List = [student.info() for cwid,student in self.stevens._students.items()]
 
         self.assertEqual(calculated, calculated2)
-        self.assertNotEqual(calculated1,calculated2)
+        self.assertNotEqual(calculated1, calculated2)
 
 
     def test_data_for_Instructor(self):
         """This function is used to test data_for_instructor function's output"""
-        stevens: Repository = Repository("R:\Stevens\Sem-2\SSW-810\HW_10_Rohan_Ratwani")
+        stevens: Repository = Repository("R:\Stevens\Sem-2\SSW-810\Student-Repository")
         calculated: List = [['98765', 'Einstein, A', 'SFEN', 'SSW 567', 4],
                             ['98765', 'Einstein, A', 'SFEN', 'SSW 540', 3],
                             ['98764', 'Feynman, R', 'SFEN', 'SSW 564', 3],
@@ -74,7 +74,7 @@ class Test(unittest.TestCase):
 
     def test_data_for_Major(self):
         """This function is used to test data_for_major function's output"""
-        self.stevens: Repository = Repository("R:\Stevens\Sem-2\SSW-810\HW_10_Rohan_Ratwani")
+        self.stevens: Repository = Repository("R:\Stevens\Sem-2\SSW-810\Student-Repository")
 
         calculated: List = [['SFEN', ['SSW 540', 'SSW 564', 'SSW 555', 'SSW 567'], ['CS 501', 'CS 513', 'CS 545']],
                             ['SYEN', ['SYS 671', 'SYS 612', 'SYS 800'], ['SSW 810', 'SSW 565', 'SSW 540']]]
@@ -87,7 +87,7 @@ class Test(unittest.TestCase):
         calculated2: List = [course.info() for major,course in self.stevens._majors.items()]
 
         self.assertEqual(calculated, calculated2)
-        self.assertNotEqual(calculated1,calculated2)
+        self.assertNotEqual(calculated1, calculated2)
 
 
 

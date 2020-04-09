@@ -66,17 +66,13 @@ class Instructor:
         # instructor taught course more than one student
         self.courses[course] += 1
 
-    # def info(self):
-    #     # k=""
-    #     # v=""
-    #     # for k,v in self._courses.items():
-    #     #     print(k,v)
-    #     #     print(self._name)
-    #     #     print(self._cwid)
-    #     return[self.courses]
 
 class Major:
-
+    """ Stores information about a Major with all of the relevant information including:
+        major
+        flag for required and elective courses
+        courses
+        """
 
     def __init__(self, major: str) -> None:
         self._major: str = major
@@ -101,14 +97,10 @@ class Major:
         #return self._courses[major]['R']
 
     def elec_course(self): return list(self._elec_courses)
-
         #return self._courses[major]['E']
 
     def info(self):
         return[self._major, Major.req_course(self), Major.elec_course(self)]
-
-    #def progress(self, courses:Dict[str,str]) -> Tuple(completed,rem_req,rem_elec,gpa):
-     #   completed = {courses for flag, courses}
 
 
 class Repository:
@@ -125,21 +117,17 @@ class Repository:
         self._read_students(self._path)
         self._read_grades(self._path)
 
-
-
         self.student_pretty_table()
         self.instructor_pretty_table()
         self.major_pretty_table()
 
-
     def _read_major(self, path: str) -> None:
-        """read each line from file instructors.txt and create instance of class instructor"""
+        """read each line from file majors.txt and create instance of class Major"""
         try:
             for major, flag, course in file_reader(os.path.join(self._path, 'majors.txt'), 3, "\t", True):
                 if major not in self._majors.keys():
                     self._majors[major] = Major(major)
                 self._majors[major].add_course(major, flag, course)
-
 
         except (FileNotFoundError, ValueError) as e:
             print(e)
@@ -172,10 +160,7 @@ class Repository:
         # look up student associated with student_cwid, reach inside and update the dictionary
         try:
             for student_cwid, course, grades, instructor_cwid in file_reader(os.path.join(self._path, 'grades.txt'), 4, "|", True):
-                #print(student_cwid)
-                #print(self._students.keys())
                 if student_cwid in self._students.keys():
-                    #print("o")
                     stu: Student = self._students[student_cwid]
                     stu.store_course_grade(course, grades)
                 else:
@@ -188,19 +173,15 @@ class Repository:
         except (FileNotFoundError, ValueError) as e:
             if FileNotFoundError:
                 print(e)
-                sys.exit()
 
     #tell the instructor that she taught one more student in the course.
     def student_pretty_table(self) -> None:
         """Print pretty table for student data"""
-        lst: List = []
-        pt = PrettyTable(field_names= ['CWID', 'Name', 'Completed Courses', 'Reuired', 'Elective', 'GPA'])
+        pt = PrettyTable(field_names= ['CWID', 'Name', 'Completed Courses', 'Remaining Reuired', 'Remaining Elective', 'GPA'])
         for stu in self._students.values():
             pt.add_row(stu.info())
-            lst.append(stu.info())
         print("Student Summary")
         print(pt, "\n")
-        return lst
 
     def instructor_pretty_table(self) -> None:
         """Print pretty table for instructor data"""
@@ -224,4 +205,4 @@ class Repository:
 
 
 if __name__ == '__main__':
-    stevens: Repository = Repository("R:\Stevens\Sem-2\SSW-810\HW_10_Rohan_Ratwani")
+    stevens: Repository = Repository("R:\Stevens\Sem-2\SSW-810\Student-Repository")
