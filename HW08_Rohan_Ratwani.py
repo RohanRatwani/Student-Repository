@@ -106,4 +106,6 @@ class FileAnalyzer:
 
 
 if __name__ == '__main__':
-    print(list(file_reader("test.text", 3, '|', False)))
+    #print(list(file_reader("grades.txt", 4, '|', True)))
+    for major, flag, courses in file_reader('majors.txt', 3, "\t", True):
+        print(major, flag, courses)
