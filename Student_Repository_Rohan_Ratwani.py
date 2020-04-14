@@ -4,6 +4,7 @@ from prettytable import PrettyTable
 from HW08_Rohan_Ratwani import file_reader
 import os, sys
 from statistics import mean
+import sqlite3
 
 class Student:
 
@@ -105,21 +106,28 @@ class Major:
 
 class Repository:
     """Store all students, instructors for a university and print pretty tables"""
-    def __init__(self, path: str) -> None:
+    def __init__(self, path: str, db_path: str) -> None:
         """ init function of class repository"""
         self._path: str = path
         self._students: Dict[str, Student] = dict()
         self._instructors: Dict[str, Instructor] = dict()
         self._majors: Dict[str, Major] = dict()
+        self.db_path:str = db_path
 
-        self._read_major(self._path)
-        self._read_instructors(self._path)
-        self._read_students(self._path)
-        self._read_grades(self._path)
+        try:
+            self._read_major(self._path)
+            self._read_instructors(self._path)
+            self._read_students(self._path)
+            self._read_grades(self._path)
 
+        except (ValueError) as ve :
+            print(ve)
+
+        self.major_pretty_table()
         self.student_pretty_table()
         self.instructor_pretty_table()
-        self.major_pretty_table()
+        self.student_grades_table_db(self.db_path)
+
 
     def _read_major(self, path: str) -> None:
         """read each line from file majors.txt and create instance of class Major"""
@@ -135,12 +143,14 @@ class Repository:
     def _read_students(self, path: str) -> None:
         """read each line from path/students.txt and create instance of class student"""
         try:
-            for cwid, name, major in file_reader(os.path.join(self._path, 'students.txt'), 3, ";", True):
-                if major in self._majors[major]._major:
+            for cwid, name, major in file_reader(os.path.join(self._path, 'students.txt'), 3, "\t", True):
+                if major in self._majors.keys():
                     required = self._majors[major].req_course()
                     elective = self._majors[major].elec_course()
                     self._students[cwid] = Student(cwid, name, major, required, elective)
 
+                else:
+                    print(f"Student with Name: {name} and CWID: {cwid} has Unknown Major:{major}")
 
         except (FileNotFoundError, ValueError) as e:
             print(e)
@@ -148,7 +158,7 @@ class Repository:
     def _read_instructors(self, path: str) -> None:
         """read each line from file instructors.txt and create instance of class instructor"""
         try:
-            for cwid, name, department in file_reader(os.path.join(self._path, 'instructors.txt'), 3, "|", True):
+            for cwid, name, department in file_reader(os.path.join(self._path, 'instructors.txt'), 3, "\t", True):
                 self._instructors[cwid] = Instructor(cwid, name, department)
         except (FileNotFoundError, ValueError) as e:
             print(e)
@@ -159,7 +169,7 @@ class Repository:
         # tell the student about the course and the grade
         # look up student associated with student_cwid, reach inside and update the dictionary
         try:
-            for student_cwid, course, grades, instructor_cwid in file_reader(os.path.join(self._path, 'grades.txt'), 4, "|", True):
+            for student_cwid, course, grades, instructor_cwid in file_reader(os.path.join(self._path, 'grades.txt'), 4, "\t", True):
                 if student_cwid in self._students.keys():
                     stu: Student = self._students[student_cwid]
                     stu.store_course_grade(course, grades)
@@ -204,5 +214,19 @@ class Repository:
         print(pt)
 
 
+    def student_grades_table_db(self, db_path) -> None:
+        "Print Student Summary for Student Data fetching from a Database File"
+        lst2: List = []
+        db : sqlite3.Connection = sqlite3.connect(self.db_path)
+        pt = PrettyTable(field_names=['Name', 'CWID', 'Course', 'Grade', 'Instructor'])
+        for row in db.execute("SELECT s.Name,s.CWID,g.Course,g.Grade,i.Name from students as s JOIN grades as g on g.StudentCWID = s.CWID JOIN instructors as i on g.InstructorCWID = i.CWID order by s.Name ASC"):
+            pt.add_row(row)
+            lst2.append(row)
+        print("Student Grade Summary")
+        print(pt)
+        return sorted(lst2)
+
+
+
 if __name__ == '__main__':
-    stevens: Repository = Repository("R:\Stevens\Sem-2\SSW-810\Student-Repository")
+    stevens: Repository = Repository("R:\Stevens\Sem-2\SSW-810\HW_11_Rohan_Ratwani","R:\Stevens\Sem-2\SSW-810\HW_11_Rohan_Ratwani\810_Assignments.db")
