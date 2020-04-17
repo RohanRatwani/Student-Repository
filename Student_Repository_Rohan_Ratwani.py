@@ -5,6 +5,9 @@ from HW08_Rohan_Ratwani import file_reader
 import os, sys
 from statistics import mean
 import sqlite3
+from flask import Flask, render_template
+
+app = Flask(__name__)
 
 class Student:
 
@@ -226,7 +229,23 @@ class Repository:
         print(pt)
         return sorted(lst2)
 
+@app.route('/student_summary/')
+def student_summary() -> str:
+    query = "select s.name, s.cwid, g.Course, g.Grade,i.name from students s join grades as g on s.cwid = g.StudentCWID join instructors i on i.cwid = g.InstructorCWID order by s.name ASC"
+
+    db: sqlite3.Connection = sqlite3.connect(self.db_path)
+
+    data: Dict[str,str] = [{
+        'name':name, 'cwid':cwid, 'course':course, 'grade':grade, 'instructor':instructor}
+        for cwid,name,course,grade,instructor in db.execute(query)
+    ]
+
+    db.close()
+    return render_template('student.html', title ="Steves Repository", table_title =" Stevens Institute of Technology", students = data)
+
+
 
 
 if __name__ == '__main__':
     stevens: Repository = Repository("R:\Stevens\Sem-2\SSW-810\HW_11_Rohan_Ratwani","R:\Stevens\Sem-2\SSW-810\HW_11_Rohan_Ratwani\810_Assignments.db")
+    app.run(debug=True)
